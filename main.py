@@ -1,5 +1,8 @@
 from tkinter import *
 from SATable import  *
+from SAFileDialog import *
+import csv
+
 
 window = Tk()
 window.title("Учёт посещаемости студентов")
@@ -28,6 +31,14 @@ minimizeButton["justify"] = "center"
 minimizeButton["text"] = "_"
 minimizeButton.place(x=1240, y=0, width=20, height=20)
 #window.bind("<Map>", frame_mapped(window))
+
+file = open("data.csv", encoding='utf-8')
+reader_object = csv.reader(file, delimiter = ",")
+
+buttonExample = tk.Button(window,
+              text="Create new window",
+              command=createNewWindow)
+buttonExample.pack()
 
 table = Table(window, headings=('Фамилия', 'Имя', 'Отчество'), rows = ((2,5),(10, 12)))
 table.pack(expand=tk.YES, fill=tk.BOTH)

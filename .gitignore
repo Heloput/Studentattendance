@@ -1,3 +1,4 @@
 
 .idea/vcs.xml
 *.xml
+__pycache__/SAFileDialog.cpython-38.pyc
