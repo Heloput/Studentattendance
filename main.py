@@ -5,12 +5,10 @@ import string
 import csv
 
 reader = 0
-isAdmin = False
-user = 0
-password = 0
+isAdmin = -1
 
 admin_login = "admin"
-admin_password="1234"
+admin_password = "1234"
 user_login = "guest"
 user_password = "111"
 
@@ -47,17 +45,27 @@ def authorization_window():
     global admin_password
     global user_login
     global user_password
+    global isAdmin
 
-    def clicked():
-        global user
-        global password
+    def clicked(self):
+        global isAdmin
         user_get = username_entry.get()
         password_get = password_entry.get()
         if (user_get == user_login) and (password_get == user_password):
-            messagebox.showinfo('Заголовок', '{username}, {password}'.format(username=user, password=password))
+            messagebox.showinfo('Гостевой режим', 'Гость, добро пожаловать!'.format(username=user_login))
+            isAdmin = 1
+            self.destroy()
+        elif (user_get == admin_login) and (password_get == admin_password):
+            messagebox.showinfo('Администратор', 'Администратор, добро пожаловать!'.format(username=user_login))
+            isAdmin = 2
+            self.destroy()
+        else:
+            messagebox.showwarning("Ошибка!", "Неверные данные!\n Проверьте ввод!")
+            isAdmin = 0
+        print(isAdmin)
 
     window = tk.Tk()
-    window.title("Загрузка файла")
+    window.title("Авторизация")
     window["bg"] = "gray22"
     window.geometry('300x150+700+400')
     window.resizable(False, False)
@@ -69,14 +77,13 @@ def authorization_window():
     username_entry.pack()
     password_label = tk.Label(window, text='Пароль', justify="center",  fg="#eee", bg="gray22")
     password_label.pack()
-    password_entry = tk.Entry(window, bg='gray', fg='#000')
+    password_entry = tk.Entry(window, bg='gray', fg='#000', show="*")
     password_entry.pack()
-    send_btn = tk.Button(window, text='Войти', command=clicked)
+    send_btn = tk.Button(window, text='Войти', command=lambda: clicked(window))
     send_btn.pack()
 
-
-
     window.mainloop()
+
 
 def main_window():
     window = tk.Tk()
@@ -119,5 +126,6 @@ def main_window():
 
 
 if download_window():
-    #main_window()
     authorization_window()
+    if isAdmin == 1 or isAdmin == 2:
+        main_window()
