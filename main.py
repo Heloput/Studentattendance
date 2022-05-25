@@ -67,8 +67,8 @@ def authorization_window():
     window = tk.Tk()
     window.title("Авторизация")
     window["bg"] = "gray22"
-    window.geometry('300x150+700+400')
-    window.resizable(False, False)
+    window.geometry('200x150+700+400')
+    window.attributes('-toolwindow', True)
     main_label = tk.Label(window, text='Авторизация', justify="center",  fg="#eee", bg="gray22")
     main_label.pack()
     user_label = tk.Label(window, text='Имя пользователя', justify="center",  fg="#eee", bg="gray22")
@@ -80,7 +80,7 @@ def authorization_window():
     password_entry = tk.Entry(window, bg='gray', fg='#000', show="*")
     password_entry.pack()
     send_btn = tk.Button(window, text='Войти', command=lambda: clicked(window))
-    send_btn.pack()
+    send_btn.place(relx=.4, rely=.75)
 
     window.mainloop()
 
@@ -91,19 +91,22 @@ def main_window():
     window.title("Учёт посещаемости студентов")
     window["bg"] = "gray22"
     window.geometry('800x450+200+200')
+    window.resizable(0, 0)  # делает неактивной кнопку Развернуть
     frame_list = tk.Frame(window, bg='gray')
-    frame_list.grid(column=0, row=2, sticky='we')
+    frame_list.grid(column=0, row=0, sticky='nsew')
+
     table = ttk.Treeview(frame_list)
     table['columns'] = [0, 1, 2, 3, 4, 5, 6, 7]
-    table['show'] = 'headings'
+    table.heading('#0', text='№')
     table.heading("#1", text="Фамилия")
     table.heading("#2", text="Имя")
     table.heading("#3", text="Отчество")
     table.heading("#4", text="Дата")
     table.heading("#5", text="Статус")
     table.heading("#6", text="Предмет")
-    table.heading("#7", text="Режим занятий")
+    table.heading("#7", text="Пара")
     table.heading("#8", text="Преподаватель")
+    table.column("#0", width=30, anchor='e')
     table.column("#1", width=100)
     table.column("#2", width=100)
     table.column("#3", width=100)
@@ -113,19 +116,34 @@ def main_window():
     table.column("#7", width=50, anchor="center")
     table.column("#8", width=100, anchor="center")
 
+    id = 0
+    iid = 0
+
     for row in reader:
-        table.insert('', tk.END, values=row)
+        table.insert('', tk.END, text=str(id), values=row)
+        iid += 1
+        id += 1
 
     scroll_pane = ttk.Scrollbar(frame_list, command=table.yview())
     table.configure(yscrollcommand=scroll_pane.set)
     scroll_pane.pack(side=tk.RIGHT, fill=tk.Y)
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
+    def insert_data():
+        table.insert('', tk.END, iid=iid)
+
+    insert_button = tk.Button(window, text="Добавить", command=insert_data)
+    insert_button.grid(row=2, column=5)
+
     window.update()
     window.mainloop()
 
 
+
+
+
+
 if download_window():
-    authorization_window()
-    if isAdmin == 1 or isAdmin == 2:
-        main_window()
+    #authorization_window()
+    #if isAdmin == 1 or isAdmin == 2:
+    main_window()
