@@ -14,11 +14,30 @@ PID = 1
 IID = 1
 
 
+def delete_row(tree):
+    row_id = int(tree.focus())
+    tree.delete(row_id)
+
+
+def edit_row(tree):
+    row_id = int(tree.focus())
+    tree.set(row_id, 2, "set!")
+
+def save_file(added_list):
+    file = open("data.csv", "w", encoding="UTF-8", newline='')
+    writer = csv.writer(file, delimiter=";")
+    for row_id in added_list.get_children():
+        row = added_list.item(row_id)['values']
+        print('save row:', row)
+        writer.writerow(row)
+
+
 def download_window():
     try:
         file = open("data.csv", encoding="UTF-8")
         global reader
         reader = csv.reader(file, delimiter=";")
+
         return True
 
     except csv.Error:
@@ -93,12 +112,12 @@ def main_window():
     window = tk.Tk()
     window.title("Учёт посещаемости студентов")
     window["bg"] = "gray22"
-    window.geometry('800x450+200+200')
+    window.geometry('630x450+200+200')
     window.resizable(0, 0)  # делает неактивной кнопку Развернуть
     frame_list = tk.Frame(window, bg='gray')
-    frame_list.grid(column=0, row=0, sticky='we')
+    frame_list.grid(column=0, row=0, sticky='we', columnspan=4)
 
-    table = ttk.Treeview(frame_list)
+    table = ttk.Treeview(frame_list, selectmode="extended")
     table['columns'] = [0, 1, 2, 3, 4, 5, 6]
     table.heading('#0', text='№')
     table.heading("#1", text="Фамилия")
@@ -183,8 +202,17 @@ def main_window():
         add_window.update()
         add_window.mainloop()
 
-    insert_button = tk.Button(window, text="Добавить", command=insert_form, justify="center")
-    insert_button.grid(row=0, column=2)
+    insert_button = tk.Button(window, text="Добавить", command=insert_form)
+    insert_button.grid(row=2, column=0)
+
+    edit_button = tk.Button(window, text="Изменить", command=lambda: edit_row(table))
+    edit_button.grid(row=2, column=1)
+
+    save_btn = tk.Button(window, text="Сохранить", command=lambda: save_file(table))
+    save_btn.grid(row=2, column=2,)
+
+    delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
+    delete_btn.grid(row=2, column=3,)
 
     window.update()
     window.mainloop()
