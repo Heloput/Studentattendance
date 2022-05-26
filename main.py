@@ -15,13 +15,116 @@ IID = 1
 
 
 def delete_row(tree):
-    row_id = int(tree.focus())
-    tree.delete(row_id)
+    if tree.focus() == '':
+        return False
+    else:
+        row_id = int(tree.focus())
+        tree.delete(row_id)
+        return True
 
 
 def edit_row(tree):
-    row_id = int(tree.focus())
-    tree.set(row_id, 2, "set!")
+    if tree.focus() == '':
+        return False
+
+    cur_item = int(tree.focus())
+
+    selected_item = tree.selection()
+    values = tree.item(selected_item, option="values")
+
+    add_window = tk.Tk()
+    add_window.title("Ввод значений")
+    add_window["bg"] = "gray22"
+    add_window.geometry('250x180+900+300')
+    add_window.attributes('-toolwindow', True)
+    family_label = tk.Label(add_window, text='Фамилия', fg="#eee", bg="gray22")
+    family_label.grid(row=0, column=0)
+
+    family_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    family_entry.insert(0, values[0])
+    family_entry.grid(row=0, column=1)
+
+    user_label = tk.Label(add_window, text='Имя', justify="center", fg="#eee", bg="gray22")
+    user_label.grid(row=1, column=0)
+
+    user_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    user_entry.insert(0, values[1])
+    user_entry.grid(row=1, column=1)
+
+    last_label = tk.Label(add_window, text='Отчество', justify="center", fg="#eee", bg="gray22")
+    last_label.grid(row=2, column=0)
+
+    last_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    last_entry.insert(0, values[2])
+    last_entry.grid(row=2, column=1)
+
+    date_label = tk.Label(add_window, text='Дата', justify="center", fg="#eee", bg="gray22", width=20)
+    date_label.grid(row=3, column=0)
+
+    date_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    date_entry.insert(0, values[3])
+    date_entry.grid(row=3, column=1)
+
+    status_label = tk.Label(add_window, text='Статус', justify="center", fg="#eee", bg="gray22", width=20)
+    status_label.grid(row=4, column=0)
+
+    status_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    status_entry.insert(0, values[4])
+    status_entry.grid(row=4, column=1)
+
+    subject_label = tk.Label(add_window, text='Предмет', justify="center", fg="#eee", bg="gray22", width=20)
+    subject_label.grid(row=5, column=0)
+
+    subject_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    subject_entry.insert(0, values[5])
+    subject_entry.grid(row=5, column=1)
+
+    schedule_label = tk.Label(add_window, text='Пара', justify="center", fg="#eee", bg="gray22", width=20)
+    schedule_label.grid(row=6, column=0)
+
+    schedule_entry = tk.Entry(add_window, bg='gray', fg='#000')
+    schedule_entry.insert(0, values[6])
+    schedule_entry.grid(row=6, column=1)
+
+    def set_data(self):
+        tree.set(cur_item, 0, family_entry.get())
+        tree.set(cur_item, 1, user_entry.get())
+        tree.set(cur_item, 2, last_entry.get())
+        tree.set(cur_item, 3, date_entry.get())
+        tree.set(cur_item, 4, status_entry.get())
+        tree.set(cur_item, 5, subject_entry.get())
+        tree.set(cur_item, 6, schedule_entry.get())
+        self.destroy()
+
+    edit_btn = tk.Button(add_window, text="Изменить", command=lambda: set_data(add_window))
+    edit_btn.grid(row=7, column=0, columnspan=2)
+
+
+def edit_cell(tree, event):
+    if tree.focus() == '':
+        return False
+    cur_item = int(tree.focus())
+    col = tree.identify_column(event.x)
+
+    def set_data(self):
+        tree.set(cur_item, int(col[1]) - 1, main_entry.get())
+        self.destroy()
+
+    window = tk.Tk()
+    window.title("Изменение значения")
+    window["bg"] = "gray22"
+    window.geometry('200x50+700+400')
+    window.attributes('-toolwindow', True)
+    main_label = tk.Label(window, text='Значение:', fg="#eee", bg="gray22")
+    main_label.grid(row=0, column=0)
+    main_entry = tk.Entry(window, bg='gray', fg='#000')
+    main_entry.grid(row=0, column=1)
+    send_btn = tk.Button(window, text='Ввод', command=lambda: set_data(window))
+    send_btn.grid(row=1, column=1)
+
+    window.update()
+    window.mainloop()
+
 
 def save_file(added_list):
     file = open("data.csv", "w", encoding="UTF-8", newline='')
@@ -186,7 +289,8 @@ def main_window():
         def insert_data():
             global PID
             global IID
-            if len(family_entry.get()) == 0 and len(user_entry.get()) == 0 and len(last_entry.get()) == 0 and len(date_entry.get()) == 0 and len(subject_entry.get()) == 0:
+            if len(family_entry.get()) == 0 and len(user_entry.get()) == 0 and len(last_entry.get()) == 0 and len(
+                    date_entry.get()) == 0 and len(subject_entry.get()) == 0:
                 messagebox.showwarning("Вводимые поля", "Пустые поля!\nВведите данные!")
             else:
                 table.insert('', tk.END, iid=IID, text=str(PID), values=(
@@ -209,10 +313,12 @@ def main_window():
     edit_button.grid(row=2, column=1)
 
     save_btn = tk.Button(window, text="Сохранить", command=lambda: save_file(table))
-    save_btn.grid(row=2, column=2,)
+    save_btn.grid(row=2, column=2, )
 
     delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
-    delete_btn.grid(row=2, column=3,)
+    delete_btn.grid(row=2, column=3, )
+
+    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
     window.update()
     window.mainloop()
