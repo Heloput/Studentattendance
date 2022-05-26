@@ -15,7 +15,39 @@ PID = 1
 IID = 1
 
 
-# def fragmentation(tree):
+def fragmentation(df):
+    length = len(df)
+    n = 0
+    m = 0
+    print(length)
+    if length < 20:
+        return False
+    if length % 2 == 0:
+        n = int(length/2)
+        m = n
+    else:
+        n = int(length/2) + 1
+        m = int(length/2)
+    print(n, m)
+
+    df1 = df.iloc[:m]
+    df2 = df.iloc[m:m+n]
+
+    first = list(df1.itertuples(index=False, name=None))
+    second = list(df2.itertuples(index=False, name=None))
+
+    print(first)
+    print(second)
+
+    file = open("first.csv", "w", encoding="UTF-8", newline='')
+    writer = csv.writer(file, delimiter=";")
+    for row in first:
+        writer.writerow(row)
+    file = open("second.csv", "w", encoding="UTF-8", newline='')
+    writer = csv.writer(file, delimiter=";")
+    for row in second:
+        writer.writerow(row)
+
 
 
 def grouping(tree):
@@ -27,7 +59,6 @@ def grouping(tree):
     group = pd.DataFrame(table, columns=['Family', 'Name', "Lastname", 'Date', "Status", "Subject", "Schedule"])
     group_ready = group[["Family", 'Name', 'Lastname']]
     group_ready = group_ready.drop_duplicates()
-    print(group_ready)
     return group_ready
 
 
@@ -63,13 +94,12 @@ def list_group(group):
     for row in out:
         table.insert('', tk.END, text=str(index), values=row)
         index += 1
-        
+
     def save_group(added_list):
         file = open("list.csv", "w", encoding="UTF-8", newline='')
         writer = csv.writer(file, delimiter=";")
         for row_id in added_list.get_children():
             row = added_list.item(row_id)['values']
-            print('save row:', row)
             writer.writerow(row)
 
     save_button = tk.Button(window, text="Сохранить список", width=70, command=lambda: save_group(table))
@@ -392,6 +422,9 @@ def main_window():
 
     list_button = tk.Button(window, text="Список группы", command=lambda: list_group(list_students))
     list_button.grid(row=4, column=0)
+
+    fragment_button = tk.Button(window, text="Разбить группу", command=lambda: fragmentation(list_students))
+    fragment_button.grid(row=4, column=1)
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
     grouping(table)
