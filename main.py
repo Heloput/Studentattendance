@@ -15,7 +15,18 @@ PID = 1
 IID = 1
 
 
+def count_misses(tree):
+    table = []
+    for row_id in tree.get_children():
+        row = tree.item(row_id)['values']
+        table.append(row)
 
+    df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус", "Предмет", "Пара"])
+    df = df[["Фамилия", 'Имя', 'Отчество',"Статус"]]
+    db = df[(df["Статус"] == 'н') | (df["Статус"] == 'б')]
+    db = db[["Фамилия", 'Имя', 'Отчество', "Статус"]].value_counts()
+    db = db.sort_values(by='Фамилия')
+    print(db)
 
 
 def fragmentation(df):
@@ -107,8 +118,6 @@ def list_group(group):
 
     save_button = tk.Button(window, text="Сохранить список", width=70, command=lambda: save_group(table))
     save_button.place(relx=0, rely=.9)
-
-
 
     window.update()
     window.mainloop()
@@ -430,7 +439,10 @@ def main_window():
     fragment_button.grid(row=4, column=1)
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
-    grouping(table)
+
+    count_misses(table)
+
+
     window.update()
     window.mainloop()
 
