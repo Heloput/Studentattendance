@@ -15,6 +15,9 @@ PID = 1
 IID = 1
 
 
+
+
+
 def fragmentation(df):
     length = len(df)
     n = 0
@@ -47,7 +50,7 @@ def fragmentation(df):
     writer = csv.writer(file, delimiter=";")
     for row in second:
         writer.writerow(row)
-
+    return True
 
 
 def grouping(tree):
@@ -56,8 +59,8 @@ def grouping(tree):
         row = tree.item(row_id)['values']
         table.append(row)
 
-    group = pd.DataFrame(table, columns=['Family', 'Name', "Lastname", 'Date', "Status", "Subject", "Schedule"])
-    group_ready = group[["Family", 'Name', 'Lastname']]
+    group = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус", "Предмет", "Пара"])
+    group_ready = group[["Фамилия", 'Имя', 'Отчество']]
     group_ready = group_ready.drop_duplicates()
     return group_ready
 
