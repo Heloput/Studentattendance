@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import pandas as pd
 import csv
 
 reader = 0
@@ -12,6 +13,21 @@ user_login = "guest"
 user_password = "111"
 PID = 1
 IID = 1
+
+
+# def fragmentation(tree):
+
+
+def grouping(tree):
+    table = []
+    for row_id in tree.get_children():
+        row = tree.item(row_id)['values']
+        table.append(row)
+    
+    group = pd.DataFrame(table, columns=['Family', 'Name', "Lastname", 'Date', "Status", "Subject", "Schedule"])
+    group_ready = group[["Family", 'Name', 'Lastname']]
+    group_ready = pd.unique(group_ready)
+    print(group_ready)
 
 
 def delete_row(tree):
@@ -219,8 +235,8 @@ def main_window():
     window.resizable(0, 0)  # делает неактивной кнопку Развернуть
     frame_list = tk.Frame(window, bg='gray')
     frame_list.grid(column=0, row=0, sticky='we', columnspan=4)
-
     table = ttk.Treeview(frame_list, selectmode="extended")
+
     table['columns'] = [0, 1, 2, 3, 4, 5, 6]
     table.heading('#0', text='№')
     table.heading("#1", text="Фамилия")
@@ -234,7 +250,7 @@ def main_window():
     table.column("#1", width=100)
     table.column("#2", width=100)
     table.column("#3", width=100)
-    table.column("#4", width=70)
+    table.column("#4", width=70, anchor="center")
     table.column("#5", width=50, anchor="center")
     table.column("#6", width=100, anchor="center")
     table.column("#7", width=50, anchor="center")
@@ -255,7 +271,7 @@ def main_window():
         add_window = tk.Tk()
         add_window.title("Ввод значений")
         add_window["bg"] = "gray22"
-        add_window.geometry('300x250+900+300')
+        add_window.geometry('280x180+900+300')
         add_window.attributes('-toolwindow', True)
         family_label = tk.Label(add_window, text='Фамилия', fg="#eee", bg="gray22")
         family_label.grid(row=0, column=0)
@@ -319,7 +335,7 @@ def main_window():
     delete_btn.grid(row=2, column=3, )
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
-
+    grouping(table)
     window.update()
     window.mainloop()
 
