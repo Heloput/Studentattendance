@@ -23,11 +23,62 @@ def grouping(tree):
     for row_id in tree.get_children():
         row = tree.item(row_id)['values']
         table.append(row)
-    
+
     group = pd.DataFrame(table, columns=['Family', 'Name', "Lastname", 'Date', "Status", "Subject", "Schedule"])
     group_ready = group[["Family", 'Name', 'Lastname']]
-    group_ready = pd.unique(group_ready)
+    group_ready = group_ready.drop_duplicates()
     print(group_ready)
+    return group_ready
+
+
+def list_group(group):
+    index = 1
+    window = tk.Tk()
+    window.title("Список студентов")
+    window["bg"] = "gray22"
+    window.geometry('500x250+300+050')
+    window.resizable(0, 0)
+    frame_list = tk.Frame(window, width=450, height=650, bg='gray')
+    frame_list.grid(column=0, row=0, sticky='we')
+    table = ttk.Treeview(frame_list, selectmode="extended")
+
+    table['columns'] = [0, 1, 2, 3, 4, 5, 6]
+
+    table.heading('#0', text='№')
+    table.heading("#1", text="Фамилия")
+    table.heading("#2", text="Имя")
+    table.heading("#3", text="Отчество")
+    table.column("#0", width=50, anchor='e')
+    table.column("#1", width=150)
+    table.column("#2", width=150)
+    table.column("#3", width=150)
+
+    scroll_pane = ttk.Scrollbar(frame_list, orient=tk.VERTICAL, command=table.yview)
+    table.configure(yscroll=scroll_pane.set)
+    scroll_pane.pack(side=tk.RIGHT, fill=tk.Y)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    out = list(group.itertuples(index=False, name=None))
+
+    for row in out:
+        table.insert('', tk.END, text=str(index), values=row)
+        index += 1
+        
+    def save_group(added_list):
+        file = open("list.csv", "w", encoding="UTF-8", newline='')
+        writer = csv.writer(file, delimiter=";")
+        for row_id in added_list.get_children():
+            row = added_list.item(row_id)['values']
+            print('save row:', row)
+            writer.writerow(row)
+
+    save_button = tk.Button(window, text="Сохранить список", width=70, command=lambda: save_group(table))
+    save_button.place(relx=0, rely=.9)
+
+
+
+    window.update()
+    window.mainloop()
 
 
 def delete_row(tree):
@@ -333,6 +384,14 @@ def main_window():
 
     delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
     delete_btn.grid(row=2, column=3, )
+
+    border_label = tk.Label(window, text="Работа с отчётами", bg="gray22", fg="#eee")
+    border_label.grid(row=3, column=0, columnspan=4)
+
+    list_students = grouping(table)
+
+    list_button = tk.Button(window, text="Список группы", command=lambda: list_group(list_students))
+    list_button.grid(row=4, column=0)
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
     grouping(table)
