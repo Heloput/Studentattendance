@@ -5,7 +5,7 @@ import pandas as pd
 import csv
 
 reader = 0
-isAdmin = -1
+isAdmin = False
 
 admin_login = "admin"
 admin_password = "1234"
@@ -13,6 +13,9 @@ user_login = "guest"
 user_password = "111"
 PID = 1
 IID = 1
+
+#def journal():
+
 
 
 def count_misses(tree):
@@ -42,7 +45,7 @@ def count_misses(tree):
     table.heading("#1", text="Фамилия")
     table.heading("#2", text="Имя")
     table.heading("#3", text="Отчество")
-    table.heading("#4", text="Пропусков")
+    table.heading("#4", text="Пропуски")
     table.column("#0", width=30, anchor='e')
     table.column("#1", width=120)
     table.column("#2", width=120)
@@ -61,7 +64,7 @@ def count_misses(tree):
         index += 1
 
     def save_group(added_list):
-        file = open("list_misses.csv", "w", encoding="UTF-8", newline='')
+        file = open("Список пропусков.csv", "w", encoding="1251", newline='')
         writer = csv.writer(file, delimiter=";")
         for row_ide in added_list.get_children():
             rows = added_list.item(row_ide)['values']
@@ -82,15 +85,15 @@ def fragmentation(df):
     if length < 20:
         return False
     if length % 2 == 0:
-        n = int(length/2)
+        n = int(length / 2)
         m = n
     else:
-        n = int(length/2) + 1
-        m = int(length/2)
+        n = int(length / 2) + 1
+        m = int(length / 2)
     print(n, m)
 
     df1 = df.iloc[:m]
-    df2 = df.iloc[m:m+n]
+    df2 = df.iloc[m:m + n]
 
     first = list(df1.itertuples(index=False, name=None))
     second = list(df2.itertuples(index=False, name=None))
@@ -98,11 +101,11 @@ def fragmentation(df):
     print(first)
     print(second)
 
-    file = open("first.csv", "w", encoding="UTF-8", newline='')
+    file = open("Первая подгруппа.csv", "w", encoding="1251", newline='')
     writer = csv.writer(file, delimiter=";")
     for row in first:
         writer.writerow(row)
-    file = open("second.csv", "w", encoding="UTF-8", newline='')
+    file = open("Вторая подгруппа.csv", "w", encoding="1251", newline='')
     writer = csv.writer(file, delimiter=";")
     for row in second:
         writer.writerow(row)
@@ -157,11 +160,11 @@ def list_group(group):
         index += 1
 
     def save_group(added_list):
-        file = open("list.csv", "w", encoding="UTF-8", newline='')
+        file = open("Список студентов.csv", "w", encoding="1251", newline='')
         writer = csv.writer(file, delimiter=";")
         for row_id in added_list.get_children():
-            row = added_list.item(row_id)['values']
-            writer.writerow(row)
+            rows = added_list.item(row_id)['values']
+            writer.writerow(rows)
 
     save_button = tk.Button(window, text="Сохранить список", width=70, command=lambda: save_group(table))
     save_button.place(relx=0, rely=.9)
@@ -334,15 +337,15 @@ def authorization_window():
         password_get = password_entry.get()
         if (user_get == user_login) and (password_get == user_password):
             messagebox.showinfo('Гостевой режим', 'Гость, добро пожаловать!'.format(username=user_login))
-            isAdmin = 1
+            isAdmin = False
             self.destroy()
         elif (user_get == admin_login) and (password_get == admin_password):
             messagebox.showinfo('Администратор', 'Администратор, добро пожаловать!'.format(username=user_login))
-            isAdmin = 2
+            isAdmin = True
             self.destroy()
         else:
             messagebox.showwarning("Ошибка!", "Неверные данные!\n Проверьте ввод!")
-            isAdmin = 0
+            isAdmin = False
         print(isAdmin)
 
     window = tk.Tk()
@@ -490,7 +493,6 @@ def main_window():
     misses_button.grid(row=4, column=2)
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
-
 
     window.update()
     window.mainloop()
