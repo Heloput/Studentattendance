@@ -28,15 +28,20 @@ def array_column_of_CSV(index):
     return results
 
 
-def sort(arr):
-    arr.sort()
-    print(arr)
+def array_columns_of_CSV(start=0, end=None):
+    results = []
+    file = open("data.csv", encoding="UTF-8")
+    read = csv.reader(file, delimiter=";")
+    for row in read:
+        if row[start:end] != '':
+            buffer = row[start:end]
+            name = buffer[0] + " " + buffer[1][0] + "." + buffer[2][0] + "."
+            results.append(name)
+    return results
 
 
-sort(array_column_of_CSV(3))
-
-
-# def journal():
+def journal():
+    array_columns_of_CSV(0, 3).sort()
 
 
 def count_misses(tree):
