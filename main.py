@@ -22,11 +22,56 @@ def count_misses(tree):
         table.append(row)
 
     df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус", "Предмет", "Пара"])
-    df = df[["Фамилия", 'Имя', 'Отчество',"Статус"]]
+    df = df[["Фамилия", 'Имя', 'Отчество', "Статус"]]
     db = df[(df["Статус"] == 'н') | (df["Статус"] == 'б')]
-    db = db[["Фамилия", 'Имя', 'Отчество', "Статус"]].value_counts()
-    db = db.sort_values(by='Фамилия')
-    print(db)
+    db = db.groupby(by=["Фамилия", "Имя", "Отчество"])['Статус'].count().reset_index(name='count')
+
+    index = 1
+    window = tk.Tk()
+    window.title("Список пропусков")
+    window["bg"] = "gray22"
+    window.geometry('500x250+300+050')
+    window.resizable(0, 0)
+    frame_list = tk.Frame(window, width=450, height=650, bg='gray')
+    frame_list.grid(column=0, row=0, sticky='we')
+    table = ttk.Treeview(frame_list, selectmode="extended")
+
+    table['columns'] = [0, 1, 2, 3, 4]
+
+    table.heading('#0', text='№')
+    table.heading("#1", text="Фамилия")
+    table.heading("#2", text="Имя")
+    table.heading("#3", text="Отчество")
+    table.heading("#4", text="Пропусков")
+    table.column("#0", width=30, anchor='e')
+    table.column("#1", width=120)
+    table.column("#2", width=120)
+    table.column("#3", width=120)
+    table.column("#4", width=80, anchor='c')
+
+    scroll_pane = ttk.Scrollbar(frame_list, orient=tk.VERTICAL, command=table.yview)
+    table.configure(yscroll=scroll_pane.set)
+    scroll_pane.pack(side=tk.RIGHT, fill=tk.Y)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    out = list(db.itertuples(index=False, name=None))
+
+    for row in out:
+        table.insert('', tk.END, text=str(index), values=row)
+        index += 1
+
+    def save_group(added_list):
+        file = open("list_misses.csv", "w", encoding="UTF-8", newline='')
+        writer = csv.writer(file, delimiter=";")
+        for row_ide in added_list.get_children():
+            rows = added_list.item(row_ide)['values']
+            writer.writerow(rows)
+
+    save_button = tk.Button(window, text="Сохранить список", width=70, command=lambda: save_group(table))
+    save_button.place(relx=0, rely=.9)
+
+    window.update()
+    window.mainloop()
 
 
 def fragmentation(df):
@@ -61,6 +106,8 @@ def fragmentation(df):
     writer = csv.writer(file, delimiter=";")
     for row in second:
         writer.writerow(row)
+    messagebox.showinfo('Разбиение', 'Группа разделилась пополам!\nФайлы сохранены и находятся в директории программы!')
+
     return True
 
 
@@ -242,6 +289,7 @@ def save_file(added_list):
         row = added_list.item(row_id)['values']
         print('save row:', row)
         writer.writerow(row)
+    messagebox.showinfo('Сохранение....', 'Таблица успешно сохранена!')
 
 
 def download_window():
@@ -438,9 +486,10 @@ def main_window():
     fragment_button = tk.Button(window, text="Разбить группу", command=lambda: fragmentation(list_students))
     fragment_button.grid(row=4, column=1)
 
-    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
+    misses_button = tk.Button(window, text="Список пропусков", command=lambda: count_misses(table))
+    misses_button.grid(row=4, column=2)
 
-    count_misses(table)
+    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
 
     window.update()
