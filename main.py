@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import pandas as pd
 import csv
+from datetime import datetime
 
 reader = 0
 isAdmin = False
@@ -14,8 +15,28 @@ user_password = "111"
 PID = 1
 IID = 1
 
-#def journal():
+datetime = ["25 Jan 2002", "23 Jan 2002"]
 
+
+def array_column_of_CSV(index):
+    results = []
+    file = open("data.csv", encoding="UTF-8")
+    read = csv.reader(file, delimiter=";")
+    for row in read:
+        if row[index] != '':
+            results.append(row[index])
+    return results
+
+
+def sort(arr):
+    arr.sort()
+    print(arr)
+
+
+sort(array_column_of_CSV(3))
+
+
+# def journal():
 
 
 def count_misses(tree):
