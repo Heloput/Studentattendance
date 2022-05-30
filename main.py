@@ -15,13 +15,17 @@ user_password = "111"
 PID = 1
 IID = 1
 
-datetime = ["25 Jan 2002", "23 Jan 2002"]
+
+# datetime = ["25 Jan 2002", "23 Jan 2002"]
 
 
 def StringToDate(string):
     date_time_obj = datetime.strptime(string, '%d.%m.%Y')
-    print(date_time_obj)
     return date_time_obj
+
+
+def DateToString(date):
+    return date.strftime("%d.%m.%Y")
 
 
 def delete_duplicate(my_list):
@@ -52,20 +56,27 @@ def array_columns_of_CSV(start=0, end=None):
 
 
 def journal():
-    array = []
     FIO = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
     dates = delete_duplicate(dates)
-   # for date in range(len(dates)):
-       # print(type(dates[date]))
-      #  dates[date] = StringToDate(dates[date])
-    print(StringToDate("25.02.2019"))
+    FIO = delete_duplicate(FIO)
+    for date in range(len(dates)):
+        dates[date] = StringToDate(dates[date])
+    dates.sort()
+    for date in range(len(dates)):
+        dates[date] = DateToString(dates[date])
     print(dates)
     FIO.sort()
-    # a = [[0 for x in range(FIO)] for y in range(rows)]
+    array = [[" " for x in range(len(dates))] for y in range(len(FIO))]
     for i in range(len(FIO)):
-        array[0][i] = i
+        array[i][0] = FIO[i]
     print(array)
+
+    df = pd.DataFrame(FIO, columns=['ФИО/Дата'])
+    # pd.concat([df, pd.DataFrame(columns=dates)])
+    #df.reindex([*df.columns.tolist(), *dates], fill_value="-")
+    df[dates] = pd.Series()
+    print(df)
 
 
 def count_misses(tree):
