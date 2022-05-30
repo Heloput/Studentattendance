@@ -18,6 +18,17 @@ IID = 1
 datetime = ["25 Jan 2002", "23 Jan 2002"]
 
 
+def StringToDate(string):
+    date_time_obj = datetime.strptime(string, '%d.%m.%Y')
+    print(date_time_obj)
+    return date_time_obj
+
+
+def delete_duplicate(my_list):
+    my_list = list(set(my_list))
+    return my_list
+
+
 def array_column_of_CSV(index):
     results = []
     file = open("data.csv", encoding="UTF-8")
@@ -41,7 +52,20 @@ def array_columns_of_CSV(start=0, end=None):
 
 
 def journal():
-    array_columns_of_CSV(0, 3).sort()
+    array = []
+    FIO = array_columns_of_CSV(0, 3)
+    dates = array_column_of_CSV(3)
+    dates = delete_duplicate(dates)
+   # for date in range(len(dates)):
+       # print(type(dates[date]))
+      #  dates[date] = StringToDate(dates[date])
+    print(StringToDate("25.02.2019"))
+    print(dates)
+    FIO.sort()
+    # a = [[0 for x in range(FIO)] for y in range(rows)]
+    for i in range(len(FIO)):
+        array[0][i] = i
+    print(array)
 
 
 def count_misses(tree):
@@ -525,8 +549,9 @@ def main_window():
 
 
 if download_window():
+    journal()
     # authorization_window()
 
     # if isAdmin == 1 or isAdmin == 2:
 
-    main_window()
+    # main_window()
