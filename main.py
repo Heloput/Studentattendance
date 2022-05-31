@@ -54,7 +54,7 @@ def array_columns_of_CSV(start=0, end=None):
             results.append(name)
     return results
 
-
+"""
 def journal():
     FIO = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
@@ -77,7 +77,7 @@ def journal():
     #df.reindex([*df.columns.tolist(), *dates], fill_value="-")
     df[dates] = pd.Series()
     print(df)
-
+"""
 
 def count_misses(tree):
     table = []
@@ -85,7 +85,7 @@ def count_misses(tree):
         row = tree.item(row_id)['values']
         table.append(row)
 
-    df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус", "Предмет", "Пара"])
+    df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус"])
     df = df[["Фамилия", 'Имя', 'Отчество', "Статус"]]
     db = df[(df["Статус"] == 'н') | (df["Статус"] == 'б')]
     db = db.groupby(by=["Фамилия", "Имя", "Отчество"])['Статус'].count().reset_index(name='count')
@@ -181,7 +181,7 @@ def grouping(tree):
         row = tree.item(row_id)['values']
         table.append(row)
 
-    group = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус", "Предмет", "Пара"])
+    group = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус"])
     group_ready = group[["Фамилия", 'Имя', 'Отчество']]
     group_ready = group_ready.drop_duplicates()
     return group_ready
@@ -449,16 +449,12 @@ def main_window():
     table.heading("#3", text="Отчество")
     table.heading("#4", text="Дата")
     table.heading("#5", text="Статус")
-    table.heading("#6", text="Предмет")
-    table.heading("#7", text="Пара")
     table.column("#0", width=40, anchor='e')
     table.column("#1", width=100)
     table.column("#2", width=100)
     table.column("#3", width=100)
     table.column("#4", width=70, anchor="center")
     table.column("#5", width=50, anchor="center")
-    table.column("#6", width=100, anchor="center")
-    table.column("#7", width=50, anchor="center")
 
     for row in reader:
         table.insert('', tk.END, iid=IID, text=str(PID), values=row)
@@ -560,9 +556,7 @@ def main_window():
 
 
 if download_window():
-    journal()
-    # authorization_window()
-
-    # if isAdmin == 1 or isAdmin == 2:
-
-    # main_window()
+    #journal()
+    #authorization_window()
+    #if isAdmin == 1 or isAdmin == 2:
+    main_window()
