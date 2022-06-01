@@ -400,10 +400,14 @@ def authorization_window():
             messagebox.showinfo('Гостевой режим', 'Гость, добро пожаловать!'.format(username=user_login))
             isAdmin = False
             self.destroy()
+            main_window()
+
         elif (user_get == admin_login) and (password_get == admin_password):
             messagebox.showinfo('Администратор', 'Администратор, добро пожаловать!'.format(username=user_login))
             isAdmin = True
             self.destroy()
+            main_window()
+
         else:
             messagebox.showwarning("Ошибка!", "Неверные данные!\n Проверьте ввод!")
             isAdmin = False
@@ -439,7 +443,7 @@ def main_window():
     window.geometry('630x450+200+200')
     window.resizable(0, 0)  # делает неактивной кнопку Развернуть
     frame_list = tk.Frame(window, bg='gray')
-    frame_list.grid(column=0, row=0, sticky='we', columnspan=4)
+    frame_list.grid(column=0, row=0, sticky='we', columnspan=6)
     table = ttk.Treeview(frame_list, selectmode="extended")
 
     table['columns'] = [0, 1, 2, 3, 4, 5, 6]
@@ -450,9 +454,9 @@ def main_window():
     table.heading("#4", text="Дата")
     table.heading("#5", text="Статус")
     table.column("#0", width=40, anchor='e')
-    table.column("#1", width=100)
-    table.column("#2", width=100)
-    table.column("#3", width=100)
+    table.column("#1", width=150)
+    table.column("#2", width=150)
+    table.column("#3", width=150)
     table.column("#4", width=70, anchor="center")
     table.column("#5", width=50, anchor="center")
 
@@ -523,20 +527,23 @@ def main_window():
         add_window.update()
         add_window.mainloop()
 
-    insert_button = tk.Button(window, text="Добавить", command=insert_form)
-    insert_button.grid(row=2, column=0)
+    if isAdmin:
+        insert_button = tk.Button(window, text="Добавить", command=insert_form)
+        insert_button.grid(row=2, column=0)
 
-    edit_button = tk.Button(window, text="Изменить", command=lambda: edit_row(table))
-    edit_button.grid(row=2, column=1)
+        edit_button = tk.Button(window, text="Изменить", command=lambda: edit_row(table))
+        edit_button.grid(row=2, column=1)
 
-    save_btn = tk.Button(window, text="Сохранить", command=lambda: save_file(table))
-    save_btn.grid(row=2, column=2, )
+        save_btn = tk.Button(window, text="Сохранить", command=lambda: save_file(table))
+        save_btn.grid(row=2, column=2, )
 
-    delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
-    delete_btn.grid(row=2, column=3, )
+        delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
+        delete_btn.grid(row=2, column=3, )
+
+
 
     border_label = tk.Label(window, text="Работа с отчётами", bg="gray22", fg="#eee")
-    border_label.grid(row=3, column=0, columnspan=4)
+    border_label.grid(row=3, column=0, columnspan=2)
 
     list_students = grouping(table)
 
@@ -556,7 +563,4 @@ def main_window():
 
 
 if download_window():
-    #journal()
-    #authorization_window()
-    #if isAdmin == 1 or isAdmin == 2:
-    main_window()
+    authorization_window()
