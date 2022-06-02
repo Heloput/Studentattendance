@@ -93,7 +93,7 @@ def journal():
     frame_list.pack(fill="both", side="top", expand=True)
     table = ttk.Treeview(frame_list, )
 
-    table['columns'] = [i for i in range(0, len(dates)+2)]
+    table['columns'] = [i for i in range(0, len(dates)+1)]
 
     table.heading('#0', text='№')
     table.heading("#1", text="ФИО")
@@ -114,12 +114,27 @@ def journal():
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
     out = list(df.itertuples(index=False, name=None))
-
+    """
     for row in out:
         table.insert('', tk.END, text=str(index), values=row)
-        table.insert()
+        #table.insert()
         index += 1
+    """
+    
+    results = []
+    file = open("data.csv", encoding="UTF-8")
+    read = csv.reader(file, delimiter=";")
+    index = 0;
+    for row in read:
+        print(row, table.set(0,0))
+            #results.append(row)
+
+    insert_df = results
+
+    #print(insert_df)
+
     #цикл вставки пропусков в журнал
+
 
 
     window.update()
