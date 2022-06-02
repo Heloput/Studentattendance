@@ -82,16 +82,15 @@ def journal():
         row = row_id
         table.append(row)
 
-
     index = 1
     window = tk.Tk()
-    window.title("Список пропусков")
+    window.title("Журнал")
     window["bg"] = "gray22"
-    window.geometry('500x250+300+050')
+    window.geometry('700x450+300+050')
     window.resizable(0, 0)
     frame_list = tk.Frame(window, bg='gray')
 
-    frame_list.grid(column=0, row=0, sticky='we')
+    frame_list.pack(fill="both", side="top", expand=True)
     table = ttk.Treeview(frame_list, )
 
     table['columns'] = [i for i in range(0, len(dates)+2)]
@@ -107,19 +106,24 @@ def journal():
         table.column("#"+str(number), width=70)
 
     scroll_pane = ttk.Scrollbar(frame_list, orient=tk.VERTICAL, command=table.yview)
+    scroll_x = ttk.Scrollbar(frame_list, orient=tk.HORIZONTAL, command=table.xview)
     table.configure(yscroll=scroll_pane.set)
+    table.configure(xscroll=scroll_x.set)
     scroll_pane.pack(side=tk.RIGHT, fill=tk.Y)
+    scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
     out = list(df.itertuples(index=False, name=None))
 
     for row in out:
         table.insert('', tk.END, text=str(index), values=row)
+        table.insert()
         index += 1
+    #цикл вставки пропусков в журнал
+
 
     window.update()
     window.mainloop()
-
 
 
 def count_misses(tree):
@@ -137,13 +141,13 @@ def count_misses(tree):
     window = tk.Tk()
     window.title("Список пропусков")
     window["bg"] = "gray22"
-    window.geometry('500x250+300+050')
+    window.geometry('490x250+300+050')
     window.resizable(0, 0)
     frame_list = tk.Frame(window, width=450, height=650, bg='gray')
     frame_list.grid(column=0, row=0, sticky='we')
     table = ttk.Treeview(frame_list, selectmode="extended")
 
-    table['columns'] = [0, 1, 2, 3, 4]
+    table['columns'] = [0, 1, 2, 3]
 
     table.heading('#0', text='№')
     table.heading("#1", text="Фамилия")
@@ -335,28 +339,12 @@ def edit_row(tree):
     status_entry.insert(0, values[4])
     status_entry.grid(row=4, column=1)
 
-    subject_label = tk.Label(add_window, text='Предмет', justify="center", fg="#eee", bg="gray22", width=20)
-    subject_label.grid(row=5, column=0)
-
-    subject_entry = tk.Entry(add_window, bg='gray', fg='#000')
-    subject_entry.insert(0, values[5])
-    subject_entry.grid(row=5, column=1)
-
-    schedule_label = tk.Label(add_window, text='Пара', justify="center", fg="#eee", bg="gray22", width=20)
-    schedule_label.grid(row=6, column=0)
-
-    schedule_entry = tk.Entry(add_window, bg='gray', fg='#000')
-    schedule_entry.insert(0, values[6])
-    schedule_entry.grid(row=6, column=1)
-
     def set_data(self):
         tree.set(cur_item, 0, family_entry.get())
         tree.set(cur_item, 1, user_entry.get())
         tree.set(cur_item, 2, last_entry.get())
         tree.set(cur_item, 3, date_entry.get())
         tree.set(cur_item, 4, status_entry.get())
-        tree.set(cur_item, 5, subject_entry.get())
-        tree.set(cur_item, 6, schedule_entry.get())
         self.destroy()
 
     edit_btn = tk.Button(add_window, text="Изменить", command=lambda: set_data(add_window))
@@ -483,24 +471,24 @@ def main_window():
     window = tk.Tk()
     window.title("Учёт посещаемости студентов")
     window["bg"] = "gray22"
-    window.geometry('630x450+200+200')
+    window.geometry('560x350+200+200')
     window.resizable(0, 0)  # делает неактивной кнопку Развернуть
-    frame_list = tk.Frame(window, bg='gray')
+    frame_list = tk.Frame(window, bg='gray', width=444, pady=4, padx=4)
     frame_list.grid(column=0, row=0, sticky='we', columnspan=6)
     table = ttk.Treeview(frame_list, selectmode="extended")
 
-    table['columns'] = [0, 1, 2, 3, 4, 5, 6]
+    table['columns'] = [0, 1, 2, 3, 4]
     table.heading('#0', text='№')
     table.heading("#1", text="Фамилия")
     table.heading("#2", text="Имя")
     table.heading("#3", text="Отчество")
     table.heading("#4", text="Дата")
     table.heading("#5", text="Статус")
-    table.column("#0", width=40, anchor='e')
-    table.column("#1", width=150)
-    table.column("#2", width=150)
-    table.column("#3", width=150)
-    table.column("#4", width=70, anchor="center")
+    table.column("#0", width=40, anchor='center')
+    table.column("#1", width=120)
+    table.column("#2", width=120)
+    table.column("#3", width=120)
+    table.column("#4", width=80, anchor="center")
     table.column("#5", width=50, anchor="center")
 
     for row in reader:
@@ -541,25 +529,16 @@ def main_window():
         status_label.grid(row=4, column=0)
         status_entry = tk.Entry(add_window, bg='gray', fg='#000')
         status_entry.grid(row=4, column=1)
-        subject_label = tk.Label(add_window, text='Предмет', justify="center", fg="#eee", bg="gray22", width=20)
-        subject_label.grid(row=5, column=0)
-        subject_entry = tk.Entry(add_window, bg='gray', fg='#000')
-        subject_entry.grid(row=5, column=1)
-        schedule_label = tk.Label(add_window, text='Пара', justify="center", fg="#eee", bg="gray22", width=20)
-        schedule_label.grid(row=6, column=0)
-        schedule_entry = tk.Entry(add_window, bg='gray', fg='#000')
-        schedule_entry.grid(row=6, column=1)
 
         def insert_data():
             global PID
             global IID
             if len(family_entry.get()) == 0 and len(user_entry.get()) == 0 and len(last_entry.get()) == 0 and len(
-                    date_entry.get()) == 0 and len(subject_entry.get()) == 0:
+                    date_entry.get()) == 0:
                 messagebox.showwarning("Вводимые поля", "Пустые поля!\nВведите данные!")
             else:
                 table.insert('', tk.END, iid=IID, text=str(PID), values=(
-                    family_entry.get(), user_entry.get(), last_entry.get(), date_entry.get(), status_entry.get(),
-                    subject_entry.get(), schedule_entry.get()))
+                    family_entry.get(), user_entry.get(), last_entry.get(), date_entry.get(), status_entry.get()))
                 add_window.destroy()
                 PID += 1
                 IID += 1
@@ -582,8 +561,6 @@ def main_window():
 
         delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
         delete_btn.grid(row=2, column=3, )
-
-
 
     border_label = tk.Label(window, text="Работа с отчётами", bg="gray22", fg="#eee")
     border_label.grid(row=3, column=0, columnspan=2)
