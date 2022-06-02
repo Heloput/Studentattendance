@@ -16,8 +16,6 @@ PID = 1
 IID = 1
 
 
-# datetime = ["25 Jan 2002", "23 Jan 2002"]
-
 
 def StringToDate(string):
     date_time_obj = datetime.strptime(string, '%d.%m.%Y')
@@ -54,7 +52,7 @@ def array_columns_of_CSV(start=0, end=None):
             results.append(name)
     return results
 
-"""
+
 def journal():
     FIO = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
@@ -74,10 +72,55 @@ def journal():
 
     df = pd.DataFrame(FIO, columns=['ФИО/Дата'])
     # pd.concat([df, pd.DataFrame(columns=dates)])
-    #df.reindex([*df.columns.tolist(), *dates], fill_value="-")
-    df[dates] = pd.Series()
+    df.reindex([*df.columns.tolist(), *dates], fill_value="-")
+    #df[dates] = pd.Series()
     print(df)
-"""
+    df
+
+    table = []
+    for row_id in df:
+        row = row_id
+        table.append(row)
+
+
+    index = 1
+    window = tk.Tk()
+    window.title("Список пропусков")
+    window["bg"] = "gray22"
+    window.geometry('500x250+300+050')
+    window.resizable(0, 0)
+    frame_list = tk.Frame(window, bg='gray')
+
+    frame_list.grid(column=0, row=0, sticky='we')
+    table = ttk.Treeview(frame_list, )
+
+    table['columns'] = [i for i in range(0, len(dates)+2)]
+
+    table.heading('#0', text='№')
+    table.heading("#1", text="ФИО")
+    table.column("#0", width=40, anchor='e')
+    table.column("#1", width=110)
+
+    for d in range(len(dates)):
+        number = d + 2
+        table.heading('#'+str(number), text=dates[d])
+        table.column("#"+str(number), width=70)
+
+    scroll_pane = ttk.Scrollbar(frame_list, orient=tk.VERTICAL, command=table.yview)
+    table.configure(yscroll=scroll_pane.set)
+    scroll_pane.pack(side=tk.RIGHT, fill=tk.Y)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    out = list(df.itertuples(index=False, name=None))
+
+    for row in out:
+        table.insert('', tk.END, text=str(index), values=row)
+        index += 1
+
+    window.update()
+    window.mainloop()
+
+
 
 def count_misses(tree):
     table = []
@@ -85,7 +128,7 @@ def count_misses(tree):
         row = tree.item(row_id)['values']
         table.append(row)
 
-    df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Дата', "Статус"])
+    df = pd.DataFrame(table, columns=['Фамилия', 'Имя', "Отчество", 'Пара', "Статус"])
     df = df[["Фамилия", 'Имя', 'Отчество', "Статус"]]
     db = df[(df["Статус"] == 'н') | (df["Статус"] == 'б')]
     db = db.groupby(by=["Фамилия", "Имя", "Отчество"])['Статус'].count().reset_index(name='count')
@@ -563,4 +606,7 @@ def main_window():
 
 
 if download_window():
-    authorization_window()
+    #authorization_window()
+    #isAdmin = True
+    #main_window()
+    journal()
