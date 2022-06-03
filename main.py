@@ -5,6 +5,10 @@ import pandas as pd
 import csv
 from datetime import datetime
 
+import sys
+
+sys.setrecursionlimit(10000)
+
 reader = 0
 isAdmin = False
 
@@ -14,7 +18,6 @@ user_login = "guest"
 user_password = "111"
 PID = 1
 IID = 1
-
 
 
 def StringToDate(string):
@@ -53,7 +56,7 @@ def array_columns_of_CSV(start=0, end=None):
     return results
 
 
-def journal():
+def journal(data):
     FIO = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
     dates = delete_duplicate(dates)
@@ -71,16 +74,11 @@ def journal():
     print(array)
 
     df = pd.DataFrame(FIO, columns=['ФИО/Дата'])
-    # pd.concat([df, pd.DataFrame(columns=dates)])
-    df.reindex([*df.columns.tolist(), *dates], fill_value="-")
-    #df[dates] = pd.Series()
-    print(df)
-    df
 
     table = []
     for row_id in df:
-        row = row_id
-        table.append(row)
+        row_str = row_id
+        table.append(row_str)
 
     index = 1
     window = tk.Tk()
@@ -93,7 +91,7 @@ def journal():
     frame_list.pack(fill="both", side="top", expand=True)
     table = ttk.Treeview(frame_list, )
 
-    table['columns'] = [i for i in range(0, len(dates)+1)]
+    table['columns'] = [i for i in range(0, len(dates) + 1)]
 
     table.heading('#0', text='№')
     table.heading("#1", text="ФИО")
@@ -102,8 +100,8 @@ def journal():
 
     for d in range(len(dates)):
         number = d + 2
-        table.heading('#'+str(number), text=dates[d])
-        table.column("#"+str(number), width=70)
+        table.heading('#' + str(number), text=dates[d])
+        table.column("#" + str(number), width=70, anchor='center')
 
     scroll_pane = ttk.Scrollbar(frame_list, orient=tk.VERTICAL, command=table.yview)
     scroll_x = ttk.Scrollbar(frame_list, orient=tk.HORIZONTAL, command=table.xview)
@@ -114,28 +112,21 @@ def journal():
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
     out = list(df.itertuples(index=False, name=None))
-    """
-    for row in out:
-        table.insert('', tk.END, text=str(index), values=row)
-        #table.insert()
+
+    for row_str in out:
+        table.insert('', tk.END, text=str(index), values=row_str)
         index += 1
-    """
-    
-    results = []
-    file = open("data.csv", encoding="UTF-8")
-    read = csv.reader(file, delimiter=";")
-    index = 0;
-    for row in read:
-        print(row, table.set(0,0))
-            #results.append(row)
 
-    insert_df = results
+    def search():
+        children = table.get_children()
+        for data_child in data.get_children():
+            row = data.item(data_child)['values']
+            person = row[0] + " " + row[1][0] + "." + row[2][0] + "."
+            for child in children:
+                if person in table.item(child)['values']:
+                    table.set(child, dates.index(row[3]) + 1, row[4])
 
-    #print(insert_df)
-
-    #цикл вставки пропусков в журнал
-
-
+    search()
 
     window.update()
     window.mainloop()
@@ -591,6 +582,9 @@ def main_window():
     misses_button = tk.Button(window, text="Список пропусков", command=lambda: count_misses(table))
     misses_button.grid(row=4, column=2)
 
+    journal_button = tk.Button(window, text="Журнал", command=lambda: journal(table))
+    journal_button.grid(row=4, column=3)
+
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
     window.update()
@@ -598,7 +592,7 @@ def main_window():
 
 
 if download_window():
-    #authorization_window()
-    #isAdmin = True
-    #main_window()
-    journal()
+    # authorization_window()
+    # isAdmin = True
+    isAdmin = True
+    main_window()
