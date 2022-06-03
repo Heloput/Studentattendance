@@ -56,6 +56,32 @@ def array_columns_of_CSV(start=0, end=None):
     return results
 
 
+def edit_cell(tree, event):
+    if tree.focus() == '':
+        return False
+    cur_item = int(tree.focus())
+    col = tree.identify_column(event.x)
+
+    def set_data(self):
+        tree.set(cur_item, int(col[1]) - 1, main_entry.get())
+        self.destroy()
+
+    window = tk.Tk()
+    window.title("Изменение значения")
+    window["bg"] = "gray22"
+    window.geometry('200x50+700+400')
+    window.attributes('-toolwindow', True)
+    main_label = tk.Label(window, text='Значение:', fg="#eee", bg="gray22")
+    main_label.grid(row=0, column=0)
+    main_entry = tk.Entry(window, bg='gray', fg='#000')
+    main_entry.grid(row=0, column=1)
+    send_btn = tk.Button(window, text='Ввод', command=lambda: set_data(window))
+    send_btn.grid(row=1, column=1)
+
+    window.update()
+    window.mainloop()
+
+
 def journal(data):
     FIO = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
@@ -114,19 +140,18 @@ def journal(data):
     out = list(df.itertuples(index=False, name=None))
 
     for row_str in out:
-        table.insert('', tk.END, text=str(index), values=row_str)
+        table.insert('', tk.END, iid=index, text=str(index), values=row_str)
         index += 1
 
-    def search():
-        children = table.get_children()
-        for data_child in data.get_children():
-            row = data.item(data_child)['values']
-            person = row[0] + " " + row[1][0] + "." + row[2][0] + "."
-            for child in children:
-                if person in table.item(child)['values']:
-                    table.set(child, dates.index(row[3]) + 1, row[4])
+    children = table.get_children()
+    for data_child in data.get_children():
+        row = data.item(data_child)['values']
+        person = row[0] + " " + row[1][0] + "." + row[2][0] + "."
+        for child in children:
+            if person in table.item(child)['values']:
+                table.set(child, dates.index(row[3]) + 1, row[4])
 
-    search()
+    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
     window.update()
     window.mainloop()
@@ -357,30 +382,7 @@ def edit_row(tree):
     edit_btn.grid(row=7, column=0, columnspan=2)
 
 
-def edit_cell(tree, event):
-    if tree.focus() == '':
-        return False
-    cur_item = int(tree.focus())
-    col = tree.identify_column(event.x)
 
-    def set_data(self):
-        tree.set(cur_item, int(col[1]) - 1, main_entry.get())
-        self.destroy()
-
-    window = tk.Tk()
-    window.title("Изменение значения")
-    window["bg"] = "gray22"
-    window.geometry('200x50+700+400')
-    window.attributes('-toolwindow', True)
-    main_label = tk.Label(window, text='Значение:', fg="#eee", bg="gray22")
-    main_label.grid(row=0, column=0)
-    main_entry = tk.Entry(window, bg='gray', fg='#000')
-    main_entry.grid(row=0, column=1)
-    send_btn = tk.Button(window, text='Ввод', command=lambda: set_data(window))
-    send_btn.grid(row=1, column=1)
-
-    window.update()
-    window.mainloop()
 
 
 def save_file(added_list):
@@ -388,7 +390,6 @@ def save_file(added_list):
     writer = csv.writer(file, delimiter=";")
     for row_id in added_list.get_children():
         row = added_list.item(row_id)['values']
-        print('save row:', row)
         writer.writerow(row)
     messagebox.showinfo('Сохранение....', 'Таблица успешно сохранена!')
 
@@ -568,6 +569,8 @@ def main_window():
         delete_btn = tk.Button(window, text="Удалить", command=lambda: delete_row(table))
         delete_btn.grid(row=2, column=3, )
 
+        window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
+
     border_label = tk.Label(window, text="Работа с отчётами", bg="gray22", fg="#eee")
     border_label.grid(row=3, column=0, columnspan=2)
 
@@ -585,7 +588,7 @@ def main_window():
     journal_button = tk.Button(window, text="Журнал", command=lambda: journal(table))
     journal_button.grid(row=4, column=3)
 
-    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
+
 
     window.update()
     window.mainloop()
