@@ -153,6 +153,49 @@ def journal(data):
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
+    def journal_save():
+        file = open("journal.csv", "w", encoding="UTF-8", newline='')
+        writer = csv.writer(file, delimiter=";")
+
+        for row_journal in table.get_children():
+            row_values = table.item(row_journal)['values']
+            str_name = row_values[0]
+            #print(str_name)
+            for child in data.get_children():
+
+                child_row = data.item(child)['values']
+                child_name = child_row[0] + " " + child_row[1][0] + "." + child_row[2][0] + "."
+                if str_name == child_name:
+                    add_list = []
+                    print("YES")
+                    print(child_name)
+                    add_list.append(child_row[0])
+                    add_list.append(child_row[1])
+                    add_list.append(child_row[2])
+                    if 'н' in table.item(row_journal)["values"]:
+                        print("Н")
+                    elif 'п' in table.item(row_journal)["values"]:
+                        print("П")
+                    elif 'б' in table.item(row_journal)["values"]:
+                        print("Б")
+                    elif 'о' in table.item(row_journal)["values"]:
+                        print("О")
+
+                    writer.writerow(add_list)
+
+
+
+        #messagebox.showinfo('Сохранение....', 'Таблица успешно сохранена!')
+
+    def on_closing():
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            journal_save()
+            window.destroy()
+
+    #window.protocol("WM_DELETE_WINDOW", on_closing)
+
+    journal_save()
+
     window.update()
     window.mainloop()
 
@@ -382,9 +425,6 @@ def edit_row(tree):
     edit_btn.grid(row=7, column=0, columnspan=2)
 
 
-
-
-
 def save_file(added_list):
     file = open("data.csv", "w", encoding="UTF-8", newline='')
     writer = csv.writer(file, delimiter=";")
@@ -587,8 +627,6 @@ def main_window():
 
     journal_button = tk.Button(window, text="Журнал", command=lambda: journal(table))
     journal_button.grid(row=4, column=3)
-
-
 
     window.update()
     window.mainloop()
