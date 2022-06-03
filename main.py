@@ -4,7 +4,6 @@ from tkinter import messagebox
 import pandas as pd
 import csv
 from datetime import datetime
-import time
 
 import sys
 
@@ -84,21 +83,21 @@ def edit_cell(tree, event):
 
 
 def journal(data):
-    FIO = array_columns_of_CSV(0, 3)
+    full_name = array_columns_of_CSV(0, 3)
     dates = array_column_of_CSV(3)
     dates = delete_duplicate(dates)
-    FIO = delete_duplicate(FIO)
+    full_name = delete_duplicate(full_name)
     for date in range(len(dates)):
         dates[date] = StringToDate(dates[date])
     dates.sort()
     for date in range(len(dates)):
         dates[date] = DateToString(dates[date])
-    FIO.sort()
-    array = [[" " for x in range(len(dates))] for y in range(len(FIO))]
-    for i in range(len(FIO)):
-        array[i][0] = FIO[i]
+    full_name.sort()
+    array = [[" " for x in range(len(dates))] for y in range(len(full_name))]
+    for i in range(len(full_name)):
+        array[i][0] = full_name[i]
 
-    df = pd.DataFrame(FIO, columns=['ФИО/Дата'])
+    df = pd.DataFrame(full_name, columns=['ФИО/Дата'])
 
     table = []
     for row_id in df:
@@ -148,7 +147,7 @@ def journal(data):
         person = row[0] + " " + row[1][0] + "." + row[2][0] + "."
         for child in children:
             if person in table.item(child)['values']:
-                table.set(child, dates.index(row[3])+1, row[4])
+                table.set(child, dates.index(row[3]) + 1, row[4])
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
@@ -176,7 +175,7 @@ def journal(data):
                     add_list.append(child_row[0])
                     add_list.append(child_row[1])
                     add_list.append(child_row[2])
-                    add_list.append(dates[int(key)-1])
+                    add_list.append(dates[int(key) - 1])
                     add_list.append(dictionary[key])
                     writer.writerow(add_list)
 
@@ -186,7 +185,7 @@ def journal(data):
                     add_list.append(child_row[0])
                     add_list.append(child_row[1])
                     add_list.append(child_row[2])
-                    add_list.append(dates[int(key)-1])
+                    add_list.append(dates[int(key) - 1])
                     add_list.append('')
                     writer.writerow(add_list)
 
@@ -634,7 +633,7 @@ def main_window():
 
 
 if download_window():
-    #authorization_window()
+    # authorization_window()
     # isAdmin = True
     isAdmin = True
     main_window()
