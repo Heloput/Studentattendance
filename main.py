@@ -4,6 +4,7 @@ from tkinter import messagebox
 import pandas as pd
 import csv
 from datetime import datetime
+import time
 
 import sys
 
@@ -147,7 +148,7 @@ def journal(data):
         person = row[0] + " " + row[1][0] + "." + row[2][0] + "."
         for child in children:
             if person in table.item(child)['values']:
-                table.set(child, dates.index(row[3]) + 1, row[4])
+                table.set(child, dates.index(row[3])+1, row[4])
 
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
@@ -161,7 +162,7 @@ def journal(data):
             child_row = ''
             dictionary = table.set(row_journal)
             del dictionary['0']
-            i = 0
+            index_misses = 0
 
             for child_data in data.get_children():
                 child_row = data.item(child_data)['values']
@@ -180,12 +181,13 @@ def journal(data):
                     writer.writerow(add_list)
 
                 else:
-                    i += 1
-                if len(dictionary) == i:
+                    index_misses += 1
+                if len(dictionary) == index_misses:
                     add_list.append(child_row[0])
                     add_list.append(child_row[1])
                     add_list.append(child_row[2])
                     add_list.append(dates[int(key)-1])
+                    add_list.append('')
                     writer.writerow(add_list)
 
     def on_closing():
@@ -194,7 +196,6 @@ def journal(data):
             window.destroy()
 
     window.protocol("WM_DELETE_WINDOW", on_closing)
-
 
     window.update()
     window.mainloop()
