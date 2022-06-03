@@ -92,12 +92,10 @@ def journal(data):
     dates.sort()
     for date in range(len(dates)):
         dates[date] = DateToString(dates[date])
-    print(dates)
     FIO.sort()
     array = [[" " for x in range(len(dates))] for y in range(len(FIO))]
     for i in range(len(FIO)):
         array[i][0] = FIO[i]
-    print(array)
 
     df = pd.DataFrame(FIO, columns=['ФИО/Дата'])
 
@@ -154,47 +152,49 @@ def journal(data):
     window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
     def journal_save():
-        file = open("journal.csv", "w", encoding="UTF-8", newline='')
+        file = open("data.csv", "w", encoding="UTF-8", newline='')
         writer = csv.writer(file, delimiter=";")
-
+        print("Journal is saved!")
         for row_journal in table.get_children():
             row_values = table.item(row_journal)['values']
             str_name = row_values[0]
-            #print(str_name)
-            for child in data.get_children():
+            child_row = ''
+            dictionary = table.set(row_journal)
+            del dictionary['0']
+            i = 0
 
-                child_row = data.item(child)['values']
+            for child_data in data.get_children():
+                child_row = data.item(child_data)['values']
                 child_name = child_row[0] + " " + child_row[1][0] + "." + child_row[2][0] + "."
                 if str_name == child_name:
-                    add_list = []
-                    print("YES")
-                    print(child_name)
+                    break
+
+            for key in dictionary:
+                add_list = []
+                if dictionary[key] != '':
                     add_list.append(child_row[0])
                     add_list.append(child_row[1])
                     add_list.append(child_row[2])
-                    if 'н' in table.item(row_journal)["values"]:
-                        print("Н")
-                    elif 'п' in table.item(row_journal)["values"]:
-                        print("П")
-                    elif 'б' in table.item(row_journal)["values"]:
-                        print("Б")
-                    elif 'о' in table.item(row_journal)["values"]:
-                        print("О")
-
+                    add_list.append(dates[int(key)-1])
+                    add_list.append(dictionary[key])
                     writer.writerow(add_list)
 
-
-
-        #messagebox.showinfo('Сохранение....', 'Таблица успешно сохранена!')
+                else:
+                    i += 1
+                if len(dictionary) == i:
+                    add_list.append(child_row[0])
+                    add_list.append(child_row[1])
+                    add_list.append(child_row[2])
+                    add_list.append(dates[int(key)-1])
+                    writer.writerow(add_list)
 
     def on_closing():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             journal_save()
             window.destroy()
 
-    #window.protocol("WM_DELETE_WINDOW", on_closing)
+    window.protocol("WM_DELETE_WINDOW", on_closing)
 
-    journal_save()
 
     window.update()
     window.mainloop()
@@ -633,7 +633,7 @@ def main_window():
 
 
 if download_window():
-    # authorization_window()
+    #authorization_window()
     # isAdmin = True
     isAdmin = True
     main_window()
