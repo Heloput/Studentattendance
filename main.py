@@ -148,8 +148,8 @@ def journal(data):
         for child in children:
             if person in table.item(child)['values']:
                 table.set(child, dates.index(row[3]) + 1, row[4])
-
-    window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
+    if isAdmin:
+        window.bind('<Double-1>', lambda event, tree=table: edit_cell(tree, event))
 
     def journal_save():
         file = open("data.csv", "w", encoding="UTF-8", newline='')
@@ -190,8 +190,9 @@ def journal(data):
                     writer.writerow(add_list)
 
     def on_closing():
-        if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            journal_save()
+        if messagebox.askokcancel("Выход", "Вы хотите выйти и сохранить?"):
+            if isAdmin:
+                journal_save()
             window.destroy()
 
     window.protocol("WM_DELETE_WINDOW", on_closing)
@@ -633,7 +634,5 @@ def main_window():
 
 
 if download_window():
-    # authorization_window()
-    # isAdmin = True
-    isAdmin = True
-    main_window()
+    authorization_window()
+
